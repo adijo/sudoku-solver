@@ -3,17 +3,118 @@ public class Backtracking
 {
 
 	
-
-	
-	private boolean isComplete(int[][] grid)
+	public int evaluate(int[][] grid)
 	{
 		/*
-		 * Checks if we are done.
+		 * Returns 1 if we are done,
+		 * 0 if it is a valid Sudoku board
+		 * -1 if we violated some condition.
 		 */
-		return true;
+		
+		int rowCheck = rowChecker(grid);
+		int colChecker = colChecker(grid);
+		int boxChecker = boxChecker(grid);
+		if(rowCheck == 1 && colChecker == 1 && boxChecker ==1)
+			return 1;
+		else if(rowCheck == -1 || colChecker == -1 || boxChecker == -1)
+			return -1;
+		else 
+			return 0;
 	}
 	
-	public boolean isValidHelper(int[][] grid, int row, int col)
+	private int rowChecker(int[][] grid)
+	{
+		int[] res = new int[9];
+		for(int i = 0; i < 9; i++) res[i] = rowCheckHelper(grid, i);
+	
+		boolean all = true;
+		boolean fault = false;
+		
+		for(int f : res)
+		{
+			if(f == -1) fault = true;
+			if(f == 0) all = false;
+			
+		}
+		
+		if(!fault && all) return 1;
+		else if(!fault) return 0;
+		else return -1;
+	}
+	
+	private int rowCheckHelper(int[][] grid, int row)
+	{
+		int[] freq = new int[10];
+		for(int i = 0; i < 9; i++)
+		{
+			freq[grid[row][i]]++;
+		}
+		return freqChecker(freq);
+	}
+	
+	private int colCheckHelper(int[][] grid, int col)
+	{
+		int[] freq = new int[10];
+		for(int i = 0; i < 9; i++)
+		{
+			freq[grid[i][col]]++;
+		}
+		return freqChecker(freq);
+	}
+	
+	private int colChecker(int[][] grid)
+	{
+		
+		int[] res = new int[9];
+		for(int i = 0; i < 9; i++) res[i] = colCheckHelper(grid, i);
+		boolean all = true;
+		boolean fault = false;
+		
+		for(int f : res)
+		{
+			if(f == -1)
+			{
+				fault = true;
+			}
+			if(f == 0) all = false;
+		}
+
+		if(!fault && all) return 1;
+		else if(!fault) return 0;
+		else return -1;
+	}
+	
+	private int boxChecker(int[][] grid)
+	{
+		int[] rows = new int[]{0, 3, 6};
+		int[] cols = new int[]{0, 3, 6};
+		
+		int[] res = new int[9];
+		int ptr = 0;
+		for(int row : rows)
+		{
+			for(int col : cols)
+			{
+				res[ptr++] = boxCheckHelper(grid, row, col);
+			}
+		}
+		
+		boolean all = true;
+		boolean fault = false;
+		
+		for(int f : res)
+		{
+			if(f == -1) fault = true;
+			if(f == 0) all = false;
+			
+		}
+
+		if(!fault && all) return 1;
+		else if(!fault) return 0;
+		else return -1;
+	}
+	
+	public int boxCheckHelper(int[][] grid, int row, int col)
 	{
 		int[] freq = new int[10];
 		for(int i = row; i < row + 3; i++)
@@ -24,15 +125,8 @@ public class Backtracking
 			}
 		}
 		
-		int res = freqChecker(freq);
-		if(res == 1 || res == 2)
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return freqChecker(freq);
+		
 	}
 	
 	private int freqChecker(int[] freq)
@@ -50,33 +144,11 @@ public class Backtracking
 				all = false;
 			}
 		}
-		if(!invalid && all) return 2;
-		else if(!invalid) return 1;
+		if(!invalid && all) return 1;
+		else if(!invalid) return 0;
 		else return -1;
 	}
 	
-	public boolean isValid(int[][] grid)
-	{
-		/*
-		 * Checks if given grid is consistent with the
-		 * sudoku rules.
-		 */
-		
-		int[] rows = new int[]{0, 3, 6};
-		int[] cols = new int[]{0, 3, 6};
-		
-		
-		for(int row : rows)
-		{
-			for(int col : cols)
-			{
-				if(!isValidHelper(grid, row, col)) 
-					return false;
-			}
-		}
-		
-		return true;
-	}
 	
 	private Cell nextMove(int[][] grid)
 	{
