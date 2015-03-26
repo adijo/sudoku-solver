@@ -2,8 +2,38 @@
 public class Backtracking 
 {
 
+	public int[][] solver(int[][] grid)
+	{
+		int eval = evaluate(grid);
+		if(eval == 1)
+		{
+			return grid;
+		}
+		
+		else if(eval == -1)
+		{
+			return null;
+		}
+		
+		else
+		{
+			Cell next = nextMove(grid);
+			for(int i = 1; i <= 9; i++)
+			{
+				grid[next.x][next.y] = i;
+				int[][] res = solver(grid);
+				if(res != null)
+				{
+					return grid;
+				}
+				else grid[next.x][next.y] = 0;
+			}
+			
+			return null;
+		}
+	}
 	
-	public int evaluate(int[][] grid)
+	private int evaluate(int[][] grid)
 	{
 		/*
 		 * Returns 1 if we are done,
@@ -114,7 +144,7 @@ public class Backtracking
 		else return -1;
 	}
 	
-	public int boxCheckHelper(int[][] grid, int row, int col)
+	private int boxCheckHelper(int[][] grid, int row, int col)
 	{
 		int[] freq = new int[10];
 		for(int i = row; i < row + 3; i++)
@@ -155,8 +185,21 @@ public class Backtracking
 		/*
 		 * Returns next cell that should be filled up.
 		 */
-		
-		
+		for(int i = 0; i < 9; i++)
+		{
+			for(int j = 0; j < 9; j++)
+			{
+				if(grid[i][j] == 0)
+				{
+					return new Cell(i, j);
+				}
+				
+			}
+			
+		}
+		/*
+		 * Needless to say, this should NEVER happen.
+		 */
 		return null;
 	}
 	
